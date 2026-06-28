@@ -7,6 +7,12 @@ import ParentLayout from "../layouts/ParentLayout";
 import AdminLayout from "../layouts/AdminLayout";
 
 import HomePage from "../pages/public/HomePage";
+import AboutPage from "../pages/public/AboutPage";
+import CoursesPage from "../pages/public/CoursesPage";
+import FacultyPage from "../pages/public/FacultyPage";
+import AchievementsPage from "../pages/public/AchievementsPage";
+import DemoPage from "../pages/public/DemoPage";
+import ContactPage from "../pages/public/ContactPage";
 import StudentDashboard from "../pages/student/StudentDashboard";
 import TeacherDashboard from "../pages/teacher/TeacherDashboard";
 import ParentDashboard from "../pages/parent/ParentDashboard";
@@ -19,6 +25,12 @@ export default function AppRouter() {
 
         <Route element={<PublicLayout />}>
           <Route path="/" element={<HomePage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/courses" element={<CoursesPage />} />
+          <Route path="/faculty" element={<FacultyPage />} />
+          <Route path="/achievements" element={<AchievementsPage />} />
+          <Route path="/demo" element={<DemoPage />} />
+          <Route path="/contact" element={<ContactPage />} />
         </Route>
 
         <Route path="/student" element={<StudentLayout />}>
