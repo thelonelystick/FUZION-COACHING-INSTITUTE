@@ -32,7 +32,8 @@ export default function AdminDashboard() {
   const handleAdmissionDecision = async (admissionId: string, action: "approve" | "reject") => {
     setBusyId(admissionId);
     try {
-      if (action === "approve") await approveAdmission(admissionId); else await rejectAdmission(admissionId);
+      if (action === "approve") await approveAdmission(admissionId);
+      else await rejectAdmission(admissionId);
     } finally {
       setBusyId(null);
     }
