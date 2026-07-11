@@ -1,6 +1,20 @@
 :root{
   --primary:#2563EB;
-  --background:#F8FAFC;
+  --background:linear-gradient(135deg, #f8fbff 0%, #eef4ff 100%);
   --surface:#FFFFFF;
   --text:#0F172A;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+body {
+  background: var(--background);
+  color: var(--text);
+}
+
+.float-slow {
+  animation: float 6s ease-in-out infinite;
 }
