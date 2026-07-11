@@ -215,3 +215,15 @@ export default function HomePage() {
                 </label>
                 <div className="md:col-span-2 flex flex-wrap gap-3">
                   <button className="rounded-full bg-gradient-to-r from-cyan-500 to-indigo-600 px-5 py-3 font-semibold text-white transition-all duration-300 transform hover:-translate-y-0.5" type="submit">Schedule Visit</button>
+                  <button className="rounded-full border border-white/10 px-5 py-3 text-slate-300 transition-all duration-300 transform hover:-translate-y-0.5" type="button" onClick={() => setModal(null)}>Cancel</button>
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
+      ) : null}
+    </Container>
+  );
+}
+
+

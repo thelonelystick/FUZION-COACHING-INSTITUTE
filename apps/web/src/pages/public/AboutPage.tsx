@@ -1,4 +1,4 @@
-import { ArrowRight, BadgeCheck, Compass, TrendingUp } from "lucide-react";
+import { BadgeCheck, Compass, TrendingUp } from "lucide-react";
 import Container from "../../components/common/Container";
 import Card from "../../components/ui/Card";
 

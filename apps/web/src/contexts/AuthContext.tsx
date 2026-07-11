@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import type { User as FirebaseUser } from "firebase/auth";
 import { onAuthStateChanged, signOut as firebaseSignOut } from "firebase/auth";
 import { deleteDoc, doc, getDoc, onSnapshot, serverTimestamp, setDoc } from "firebase/firestore";
@@ -6,18 +6,18 @@ import { auth } from "../firebase/firebaseAuth";
 import { db } from "../firebase/firestore";
 import { signInWithRole, signUpWithRole } from "../lib/authHelpers";
 
-type UserRole = "student" | "teacher" | "parent" | "admin" | null;
+type UserRole = "student" | "teacher" | "parent" | "admin";
 
 type AuthUser = {
   uid: string;
   email: string | null;
-  role: UserRole;
+  role: UserRole | null;
   displayName?: string | null;
 };
 
 type AuthContextValue = {
   user: AuthUser | null;
-  role: UserRole;
+  role: UserRole | null;
   loading: boolean;
   sessionWarning: string;
   clearSessionWarning: () => void;
@@ -56,7 +56,7 @@ async function clearActiveSession(uid: string, deviceId: string) {
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
-  const [role, setRole] = useState<UserRole>(null);
+  const [role, setRole] = useState<UserRole | null>(null);
   const [loading, setLoading] = useState(true);
   const [sessionWarning, setSessionWarning] = useState("");
   const [deviceId] = useState(getOrCreateDeviceId);
@@ -81,7 +81,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       setLoading(true);
 
-      let currentRole: UserRole = null;
+      let currentRole: UserRole | null = null;
       try {
         const snap = await getDoc(doc(db, "users", firebaseUser.uid));
         const data = snap.data() as { role?: UserRole; status?: string } | undefined;
@@ -98,12 +98,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setRole(null);
       }
 
-      setUser({
-        uid: firebaseUser.uid,
-        email: firebaseUser.email,
-        role: currentRole,
-        displayName: firebaseUser.displayName,
-      });
+        setUser({
+          uid: firebaseUser.uid,
+          email: firebaseUser.email,
+          role: currentRole,
+          displayName: firebaseUser.displayName,
+        });
 
       try {
         await setDoc(
