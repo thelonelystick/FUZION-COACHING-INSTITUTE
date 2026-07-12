@@ -2,6 +2,7 @@ import { useState } from "react";
 import { ArrowRight, Building2, Mail, MapPin, Phone } from "lucide-react";
 import Container from "../../components/common/Container";
 import Card from "../../components/ui/Card";
+import { INSTITUTE } from "../../constants/institute";
 
 export default function ContactPage() {
   const [form, setForm] = useState({ name: "", email: "", phone: "", message: "" });
@@ -43,9 +44,9 @@ export default function ContactPage() {
               </div>
             </div>
             <div className="mt-6 space-y-3 text-sm text-slate-600">
-              <div className="flex items-center gap-3 rounded-2xl border border-blue-100 bg-slate-50 p-3"><Phone size={16} className="text-blue-700" /><span>+91 98765 43210</span></div>
-              <div className="flex items-center gap-3 rounded-2xl border border-blue-100 bg-slate-50 p-3"><Mail size={16} className="text-blue-700" /><span>admissions@fuzioncoaching.in</span></div>
-              <div className="flex items-center gap-3 rounded-2xl border border-blue-100 bg-slate-50 p-3"><MapPin size={16} className="text-blue-700" /><span>Bharat City, Gurugram, Haryana</span></div>
+              <div className="flex items-center gap-3 rounded-2xl border border-blue-100 bg-slate-50 p-3"><Phone size={16} className="text-blue-700" /><span>{INSTITUTE.phone}</span></div>
+              <div className="flex items-center gap-3 rounded-2xl border border-blue-100 bg-slate-50 p-3"><Mail size={16} className="text-blue-700" /><span>{INSTITUTE.email}</span></div>
+              <div className="flex items-center gap-3 rounded-2xl border border-blue-100 bg-slate-50 p-3"><MapPin size={16} className="text-blue-700" /><span>{INSTITUTE.address}</span></div>
             </div>
           </Card>
         </div>

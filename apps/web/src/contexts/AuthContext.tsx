@@ -4,9 +4,7 @@ import { onAuthStateChanged, signOut as firebaseSignOut } from "firebase/auth";
 import { deleteDoc, doc, getDoc, onSnapshot, serverTimestamp, setDoc } from "firebase/firestore";
 import { auth } from "../firebase/firebaseAuth";
 import { db } from "../firebase/firestore";
-import { signInWithRole, signUpWithRole } from "../lib/authHelpers";
-
-type UserRole = "student" | "teacher" | "parent" | "admin";
+import { changePassword as changePasswordHelper, getUserRoleProfile, sendPasswordReset, signInWithRole, signUpWithRole, type UserRole } from "../lib/authHelpers";
 
 type AuthUser = {
   uid: string;
@@ -21,8 +19,10 @@ type AuthContextValue = {
   loading: boolean;
   sessionWarning: string;
   clearSessionWarning: () => void;
-  signIn: (email: string, password: string) => Promise<void>;
-  signUp: (email: string, password: string, role: UserRole, extra?: Record<string, unknown>) => Promise<void>;
+  signIn: (email: string, password: string, rememberMe?: boolean) => Promise<UserRole | null>;
+  signUp: (email: string, password: string, role: UserRole, extra?: Record<string, unknown>) => Promise<UserRole | null>;
+  forgotPassword: (email: string) => Promise<void>;
+  changePassword: (currentPassword: string, newPassword: string) => Promise<void>;
   signOut: () => Promise<void>;
 };
 
@@ -83,12 +83,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       let currentRole: UserRole | null = null;
       try {
-        const snap = await getDoc(doc(db, "users", firebaseUser.uid));
-        const data = snap.data() as { role?: UserRole; status?: string } | undefined;
-        currentRole = (data?.role as UserRole) ?? null;
+        const profile = await getUserRoleProfile(firebaseUser.uid);
+        currentRole = profile.role;
         setRole(currentRole);
 
-        if (data?.status === "suspended") {
+        if (profile.status === "suspended") {
           setSessionWarning("Your account is suspended. Contact support for assistance.");
           await firebaseSignOut(auth);
           setLoading(false);
@@ -98,12 +97,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setRole(null);
       }
 
-        setUser({
-          uid: firebaseUser.uid,
-          email: firebaseUser.email,
-          role: currentRole,
-          displayName: firebaseUser.displayName,
-        });
+      setUser({
+        uid: firebaseUser.uid,
+        email: firebaseUser.email,
+        role: currentRole,
+        displayName: firebaseUser.displayName,
+      });
 
       try {
         await setDoc(
@@ -132,16 +131,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, [deviceId]);
 
-  const signIn = async (email: string, password: string) => {
-    const result = await signInWithRole(email, password);
+  const signIn = async (email: string, password: string, rememberMe = true) => {
+    const result = await signInWithRole(email, password, rememberMe);
     setUser({ uid: result.uid, email, role: result.role, displayName: null });
     setRole(result.role);
+    return result.role;
   };
 
   const signUp = async (email: string, password: string, role: UserRole, extra: Record<string, unknown> = {}) => {
     const result = await signUpWithRole(email, password, role, extra);
     setUser({ uid: result.uid, email, role: result.role, displayName: null });
     setRole(result.role);
+    return result.role;
+  };
+
+  const forgotPassword = async (email: string) => {
+    await sendPasswordReset(email);
+  };
+
+  const changePassword = async (currentPassword: string, newPassword: string) => {
+    await changePasswordHelper(currentPassword, newPassword);
   };
 
   async function signOut() {
@@ -162,6 +171,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       clearSessionWarning: () => setSessionWarning(""),
       signIn,
       signUp,
+      forgotPassword,
+      changePassword,
       signOut,
     }),
     [user, role, loading, sessionWarning, deviceId]

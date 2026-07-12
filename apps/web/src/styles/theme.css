@@ -1,8 +1,12 @@
 :root{
   --primary:#2563EB;
+  --secondary:#3B82F6;
+  --accent:#60A5FA;
   --background:linear-gradient(135deg, #f8fbff 0%, #eef4ff 100%);
-  --surface:#FFFFFF;
+  --surface:#EFF6FF;
   --text:#0F172A;
+  --muted:#475569;
+  --white:#FFFFFF;
 }
 
 @keyframes float {
@@ -13,6 +17,11 @@
 body {
   background: var(--background);
   color: var(--text);
+  font-family: "Inter", sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Libre Baskerville", serif;
 }
 
 .float-slow {
