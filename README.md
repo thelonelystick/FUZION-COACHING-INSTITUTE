@@ -4,7 +4,7 @@ Production-grade Coaching Management System.
 
 ## Live website 
 
-https://thelonelystickk.github.io/FUZION-COACHING-INSTITUTE/
+https://thelonelystick.github.io/FUZION-COACHING-INSTITUTE/
 
 ## Project roles
 
