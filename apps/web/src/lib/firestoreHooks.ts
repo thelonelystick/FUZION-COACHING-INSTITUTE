@@ -8,6 +8,11 @@ export function useAdmissions() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!db) {
+      setLoading(false);
+      return;
+    }
+
     const q = query(collection(db, "admissions"), orderBy("createdAt", "desc"));
     const unsubscribe = onSnapshot(
       q,
@@ -33,6 +38,11 @@ export function useDashboardStats(collectionName: string) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!db) {
+      setLoading(false);
+      return;
+    }
+
     const q = query(collection(db, collectionName), orderBy("createdAt", "desc"));
     const unsubscribe = onSnapshot(
       q,
@@ -60,6 +70,11 @@ export function useChildren(parentUid: string | null) {
   useEffect(() => {
     if (!parentUid) {
       setItems([]);
+      setLoading(false);
+      return;
+    }
+
+    if (!db) {
       setLoading(false);
       return;
     }
@@ -94,6 +109,11 @@ export function useParentPayments(parentUid: string | null) {
       setLoading(false);
       return;
     }
+    if (!db) {
+      setLoading(false);
+      return;
+    }
+
     const q = query(collection(db, "payments"), where("parentId", "==", parentUid), orderBy("createdAt", "desc"));
     const unsubscribe = onSnapshot(
       q,

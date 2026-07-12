@@ -1,6 +1,6 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ArrowRight, Building2, Eye, EyeOff, GraduationCap, ShieldCheck, Sparkles, Users } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Container from "../../components/common/Container";
 import Card from "../../components/ui/Card";
 import { useAuth } from "../../contexts/AuthContext";
@@ -33,10 +33,18 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
   const [loading, setLoading] = useState(false);
-  const { signIn, signUp, forgotPassword } = useAuth();
+  const { signIn, signUp, forgotPassword, user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const submitLabel = useMemo(() => (mode === "login" ? "Sign In" : "Create Account"), [mode]);
+
+  useEffect(() => {
+    if (!authLoading && user?.role) {
+      const from = (location.state as { from?: { pathname?: string } } | null)?.from?.pathname;
+      navigate(from && from !== "/login" ? from : roleToPath[user.role], { replace: true });
+    }
+  }, [authLoading, location.state, navigate, user]);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -113,7 +121,7 @@ export default function LoginPage() {
               ) : null}
               <label className="grid gap-2 text-sm text-slate-700">
                 <span className="font-medium">Email Address</span>
-                <input type="email" required value={email} onChange={(event) => setEmail(event.target.value)} className="rounded-2xl border border-slate-200 bg-slate-50/80 px-4 py-3 outline-none transition-all duration-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20" placeholder="name@fuzioncoaching.in" />
+                <input type="email" required value={email} onChange={(event) => setEmail(event.target.value)} className="rounded-2xl border border-slate-200 bg-slate-50/80 px-4 py-3 outline-none transition-all duration-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20" placeholder="akamit580@gmail.com" />
               </label>
               <label className="grid gap-2 text-sm text-slate-700">
                 <span className="font-medium">Password</span>
@@ -133,12 +141,14 @@ export default function LoginPage() {
                   <button type="button" className="font-semibold text-blue-700" onClick={handleForgotPassword}>Forgot password?</button>
                 </div>
               ) : null}
-              <label className="grid gap-2 text-sm text-slate-700">
-                <span className="font-medium">Access Level</span>
-                <select value={role} onChange={(event) => setRole(event.target.value as UserRole)} className="rounded-2xl border border-slate-200 bg-slate-50/80 px-4 py-3 outline-none transition-all duration-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20">
-                  {roleOptions.map((option) => <option value={option.value} key={option.value}>{option.label}</option>)}
-                </select>
-              </label>
+              {mode === "signup" ? (
+                <label className="grid gap-2 text-sm text-slate-700">
+                  <span className="font-medium">Access Level</span>
+                  <select value={role} onChange={(event) => setRole(event.target.value as UserRole)} className="rounded-2xl border border-slate-200 bg-slate-50/80 px-4 py-3 outline-none transition-all duration-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20">
+                    {roleOptions.map((option) => <option value={option.value} key={option.value}>{option.label}</option>)}
+                  </select>
+                </label>
+              ) : null}
               {error ? <p className="rounded-2xl border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-600">{error}</p> : null}
               {success ? <p className="rounded-2xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-600">{success}</p> : null}
               <button className="flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-blue-600 to-indigo-700 px-4 py-3 font-semibold text-white transition-all duration-300 hover:-translate-y-0.5" type="submit" disabled={loading}>

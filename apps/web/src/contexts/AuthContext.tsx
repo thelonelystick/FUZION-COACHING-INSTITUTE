@@ -42,6 +42,10 @@ function getOrCreateDeviceId() {
 }
 
 async function clearActiveSession(uid: string, deviceId: string) {
+  if (!db) {
+    return;
+  }
+
   try {
     const sessionRef = doc(db, "active_sessions", uid);
     const sessionSnap = await getDoc(sessionRef);
@@ -63,6 +67,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     let unsubscribeSession: (() => void) | undefined;
+
+    if (!auth) {
+      setUser(null);
+      setRole(null);
+      setLoading(false);
+      return;
+    }
 
     const unsubscribeAuth = onAuthStateChanged(auth, async (firebaseUser: FirebaseUser | null) => {
       if (unsubscribeSession) {
@@ -89,7 +100,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         if (profile.status === "suspended") {
           setSessionWarning("Your account is suspended. Contact support for assistance.");
-          await firebaseSignOut(auth);
+          if (auth) {
+            await firebaseSignOut(auth);
+          }
           setLoading(false);
           return;
         }
@@ -105,22 +118,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
 
       try {
-        await setDoc(
-          doc(db, "active_sessions", firebaseUser.uid),
-          { uid: firebaseUser.uid, deviceId, lastSeen: serverTimestamp(), active: true, role: currentRole },
-          { merge: true }
-        );
+        if (db) {
+          await setDoc(
+            doc(db, "active_sessions", firebaseUser.uid),
+            { uid: firebaseUser.uid, deviceId, lastSeen: serverTimestamp(), active: true, role: currentRole },
+            { merge: true }
+          );
+        }
       } catch {
         // ignore session write failures
       }
 
-      unsubscribeSession = onSnapshot(doc(db, "active_sessions", firebaseUser.uid), async (snap) => {
-        const session = snap.data() as { deviceId?: string } | undefined;
-        if (session?.deviceId && session.deviceId !== deviceId) {
-          setSessionWarning("Session limited to 1 active device. You have been logged out.");
-          await firebaseSignOut(auth);
-        }
-      });
+      if (db) {
+        unsubscribeSession = onSnapshot(doc(db, "active_sessions", firebaseUser.uid), async (snap) => {
+          const session = snap.data() as { deviceId?: string } | undefined;
+          if (session?.deviceId && session.deviceId !== deviceId) {
+            setSessionWarning("Session limited to 1 active device. You have been logged out.");
+            if (auth) {
+              await firebaseSignOut(auth);
+            }
+          }
+        });
+      }
 
       setLoading(false);
     });
@@ -157,7 +176,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (user) {
       await clearActiveSession(user.uid, deviceId);
     }
-    await firebaseSignOut(auth);
+    if (auth) {
+      await firebaseSignOut(auth);
+    }
     setUser(null);
     setRole(null);
   }

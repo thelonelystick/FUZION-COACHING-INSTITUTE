@@ -24,6 +24,11 @@ export default function TeacherDashboard() {
       return;
     }
 
+    if (!storage) {
+      setMessage("Storage service is unavailable. Please check Firebase configuration.");
+      return;
+    }
+
     const path = `materials/${noteCourse}/${crypto.randomUUID()}-${noteFile.name}`;
     const task = uploadBytesResumable(ref(storage, path), noteFile, {
       contentType: noteFile.type,

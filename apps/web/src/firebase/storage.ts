@@ -1,4 +1,4 @@
-import { getStorage } from "firebase/storage";
+import { getStorage, type FirebaseStorage } from "firebase/storage";
 import { app } from "./firebaseConfig";
 
-export const storage = getStorage(app);
+export const storage: FirebaseStorage | null = app ? getStorage(app) : null;

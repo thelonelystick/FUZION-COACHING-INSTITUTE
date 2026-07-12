@@ -13,6 +13,10 @@ export type AdmissionPayload = {
 };
 
 export async function submitAdmission(payload: AdmissionPayload) {
+  if (!db) {
+    throw new Error("Firebase Firestore is unavailable.");
+  }
+
   return addDoc(collection(db, "admissions"), {
     ...payload,
     createdAt: serverTimestamp(),

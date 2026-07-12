@@ -6,7 +6,7 @@ import { AuthProvider } from "./contexts/AuthContext";
 
 import { app } from "./firebase/firebaseConfig";
 
-console.log("Firebase App:", app.name);
+console.info("Firebase app ready:", Boolean(app));
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
