@@ -28,11 +28,11 @@ jobs:
           cache-dependency-path: ./apps/web/package-lock.json
 
       - name: Install dependencies
-        working-directory: web
+        working-directory: ./apps/web
         run: npm ci
 
       - name: Build
-        working-directory: ./apps/web
+        working-directory: apps/web
         run: npm run build
 
       - uses: actions/upload-pages-artifact@v3
